@@ -53,6 +53,16 @@
   	  <url-pattern>/posts</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>cronHandler</servlet-name>
+    <servlet-class>guestbook.cronHandler</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>cronHandler</servlet-name>
+    <url-pattern>/subscribe</url-pattern>
+  </servlet-mapping>
+
   <welcome-file-list>
     <welcome-file>ofyguestbook.jsp</welcome-file>
   </welcome-file-list>
