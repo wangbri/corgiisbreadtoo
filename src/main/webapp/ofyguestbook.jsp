@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="guestbook.Greeting" %>
+<%@ page import="guestbook.MailingList" %>
 <%@ page import="java.util.Collections" %>
 <%@ page import="com.google.appengine.api.users.User" %>
 <%@ page import="com.google.appengine.api.users.UserService" %>
@@ -67,9 +68,13 @@
 	ObjectifyService.register(Greeting.class);
 	List<Greeting> greetings = ObjectifyService.ofy().load().type(Greeting.class).list();   
 	Collections.sort(greetings); 
-    
+	
+	
+
     if (greetings.isEmpty()) {
 %>
+
+
 
 <p>Guestbook '${fn:escapeXml(guestbookName)}' has no messages.</p>
 
@@ -92,6 +97,8 @@ for (int i = 0; i < 5; i++) {
     pageContext.setAttribute("greeting_user", greeting.getUser());
 
 %>
+
+
     <div align="center">
     <div class="card" style="width: 50rem;">
   <img class="card-img-top" src="/corgibackground.jpg" alt="Card image cap" width="250" height="50">
@@ -113,12 +120,28 @@ if (user != null) {
 	</form>
 	
 <%
+%>
+	<form action="/subscribe" method="post">
+	  <div><input type="submit" value="Subscribe" /></div>
+	  <input type="hidden" name="guestbookName" value="${fn:escapeXml(guestbookName)}"/>
+	</form>
+
+<%
+%>
+	<form action="/unsubscribe" method="post">
+	  <div><input type="submit" value="Unsubscribe" /></div>
+	  <input type="hidden" name="guestbookName" value="${fn:escapeXml(guestbookName)}"/>
+	</form>
+
+<%
 }
 %>
 	<form action="/posts" method="post">
 	  <div><input type="submit" value="View all posts" /></div>
 	  <input type="hidden" name="guestbookName" value="${fn:escapeXml(guestbookName)}"/>
 	</form>
+	
+
 	
 	
   </body>

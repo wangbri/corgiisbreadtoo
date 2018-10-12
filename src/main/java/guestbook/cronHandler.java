@@ -2,6 +2,7 @@ package guestbook;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -16,6 +17,8 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
+import com.googlecode.objectify.ObjectifyService;
+
 
 @SuppressWarnings("serial")
 public class cronHandler extends HttpServlet {
@@ -27,36 +30,55 @@ public class cronHandler extends HttpServlet {
             //Put your logic here
             //BEGIN
             resp.getWriter().println("Hello!");
-            String user = "user";   // Newly created user on JAMES Server
-            String password = "password"; // user password
-            
-            Properties properties = new Properties();
-            properties.setProperty("mail.smtp.host", "localhost");
-            properties.put("mail.transport.protocol", "smtp");
-            properties.put("mail.smtp.host", "example.com");
-            properties.put("mail.smtp.port", "25");
-            properties.put("mail.smtp.username", user);
-            properties.put("mail.smtp.password", password);
-            Session session = Session.getDefaultInstance(properties, null);
-            
-            String from = "phyllis.ang@utexas.edu";
-            String to = "phyllisayk@gmail.com";
-                    
+//            String user = "user";   // Newly created user on JAMES Server
+//            String password = "password"; // user password
+//            
+//            Properties properties = new Properties();
+//            properties.setProperty("mail.smtp.host", "localhost");
+//            properties.put("mail.transport.protocol", "smtp");
+//            properties.put("mail.smtp.host", "example.com");
+//            properties.put("mail.smtp.port", "25");
+//            properties.put("mail.smtp.username", user);
+//            properties.put("mail.smtp.password", password);
+//            Session session = Session.getDefaultInstance(properties, null);
+//            
+//            String from = "phyllis.ang@utexas.edu";
+//            String to = "phyllisayk@gmail.com";
+//                    
+//
+//            try {
+//              Message msg = new MimeMessage(session);
+//              msg.setFrom(new InternetAddress(from, "Phyllis1"));
+//              msg.addRecipient(Message.RecipientType.TO,
+//                               new InternetAddress(to, "Phyllis2"));
+//              msg.setSubject("Your Example.com account has been activated");
+//              msg.setText("This is a test");
+//              Transport.send(msg);
+//            } catch (AddressException e) {
+//                resp.getWriter().println("Address Exception");
+//            } catch (MessagingException e) {
+//                resp.getWriter().println("Messaging Exception");
+//            } catch (UnsupportedEncodingException e) {
+//                resp.getWriter().println("UnsupportedEncoding Exception");
+//            }
+            Properties props = new Properties();
+            Session session = Session.getDefaultInstance(props, null);
 
             try {
               Message msg = new MimeMessage(session);
-              msg.setFrom(new InternetAddress(from, "Phyllis1"));
-              msg.addRecipient(Message.RecipientType.TO,
-                               new InternetAddress(to, "Phyllis2"));
+              msg.setFrom(new InternetAddress("wangbri@gmail.com", "Example.com Admin"));
+              //msg.addRecipient(Message.RecipientType.TO,
+                               //new InternetAddress("iscorgibread@gmail.com", "Mr. User"));
+              addRecipients(msg);              
               msg.setSubject("Your Example.com account has been activated");
               msg.setText("This is a test");
               Transport.send(msg);
             } catch (AddressException e) {
-                resp.getWriter().println("Address Exception");
+              // ...
             } catch (MessagingException e) {
-                resp.getWriter().println("Messaging Exception");
+              // ...
             } catch (UnsupportedEncodingException e) {
-                resp.getWriter().println("UnsupportedEncoding Exception");
+              // ...
             }
             resp.getWriter().println("Finished Sending Message!");
             
@@ -72,9 +94,19 @@ public class cronHandler extends HttpServlet {
     throws ServletException, IOException {
         doGet(req, resp);
     }
-    
-    void addRecipients(Message.RecipientType type, Address[] addresses)
+
+    void addRecipients(Message message)
             throws MessagingException{
-        
+    	ObjectifyService.register(MailingList.class);
+    	List<MailingList> mailing = ObjectifyService.ofy().load().type(MailingList.class).list();  
+    	InternetAddress[] email = new InternetAddress[mailing.size()];
+    	if (!mailing.isEmpty()) {
+    		for (int i = 0; i < mailing.size(); i++) {
+    		  	MailingList mail = mailing.get(i);
+    		  	
+    		  	email[i] = new InternetAddress(mail.getEmail().trim());
+    		}
+    	}
+    	message.setRecipients(Message.RecipientType.TO, email);
     }
 }

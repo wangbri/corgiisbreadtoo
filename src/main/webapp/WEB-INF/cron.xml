@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
   <cron>
-    <url>/subscribe</url>
+    <url>/mailing</url>
     <description>daily summary job</description>
     <schedule>every 5 minute</schedule>
   </cron>
